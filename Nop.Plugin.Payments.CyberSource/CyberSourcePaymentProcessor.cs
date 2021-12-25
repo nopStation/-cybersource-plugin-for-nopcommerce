@@ -34,7 +34,7 @@ namespace Nop.Plugin.Payments.CyberSource
         private readonly IAddressService _addressService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly ICountryService _countryService;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
@@ -48,7 +48,8 @@ namespace Nop.Plugin.Payments.CyberSource
             IWebHelper webHelper,
             IAddressService addressService,
             IStateProvinceService stateProvinceService,
-            ICountryService countryService)
+            ICountryService countryService, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _currencySettings = currencySettings;
             _cyberSourcePaymentSettings = cyberSourcePaymentSettings;
@@ -59,6 +60,7 @@ namespace Nop.Plugin.Payments.CyberSource
             _addressService = addressService;
             _stateProvinceService = stateProvinceService;
             _countryService = countryService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         #endregion
@@ -82,7 +84,7 @@ namespace Nop.Plugin.Payments.CyberSource
         /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
         public async Task PostProcessPaymentAsync(PostProcessPaymentRequest postProcessPaymentRequest)
         {
-            var post = new RemotePost
+            var post = new RemotePost(_httpContextAccessor, _webHelper)
             {
                 FormName = "CyberSource",
                 Url = _cyberSourcePaymentSettings.GatewayUrl,
